@@ -16,10 +16,40 @@ jobs:
           java-version: 1.8
 
       - name: Make gradlew executable
-        run: chmod +x ./gradlew
+        run: chmod +x gradlew
 
       - name: Run Tests
         run: ./gradlew test
 
+      - name: Run-Lint
+        run: ./gradlew lint
+
+                # Reporte de lint
+      - name: Upload html test report
+        uses: actions/upload-artifact@v2
+        with:
+          name: lint_html_report
+          path: app/build/reports/lint-results.html
+
       - name: Build Project
         run: ./gradlew assemble
+
+  unit-test:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      # Permite ejecutar ./gradlew
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit_test_report
+          path: app/build/reports/tests/testDebugUnitTest/
